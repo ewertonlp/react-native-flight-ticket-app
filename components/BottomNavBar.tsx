@@ -66,7 +66,7 @@ const BottomNavBar = () => {
         borderTopWidth: 1,
         borderTopColor: '#d0dbff',
         paddingTop: 8,
-        paddingBottom: 16,
+        paddingBottom: 28,
         paddingHorizontal: 16,
       }}
     >

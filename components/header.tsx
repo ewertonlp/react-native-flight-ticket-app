@@ -25,7 +25,7 @@ const header = () => {
         {/* Avatar */}
         <Image
           source={require("../assets/images/avatar.jpg")}
-          className="w-[36px] h-[54px] rounded-full border border-white"
+          className="w-[36px] h-[54px] rounded-full border border-slate-200 shadow-2xl shadow-black "
         />
       </View>
 

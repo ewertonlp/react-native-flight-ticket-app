@@ -195,62 +195,67 @@ const FlightDetails = () => {
     }
   };
 
-  const calculateLayoverTime = (currentSegment: any, nextSegment: any): string => {
-  if (!currentSegment || !nextSegment) return "N/A";
-  
-  try {
-    const currentArrival = new Date(currentSegment.arrival?.at);
-    const nextDeparture = new Date(nextSegment.departure?.at);
-    
-    if (isNaN(currentArrival.getTime()) || isNaN(nextDeparture.getTime())) {
+  const calculateLayoverTime = (
+    currentSegment: any,
+    nextSegment: any
+  ): string => {
+    if (!currentSegment || !nextSegment) return "N/A";
+
+    try {
+      const currentArrival = new Date(currentSegment.arrival?.at);
+      const nextDeparture = new Date(nextSegment.departure?.at);
+
+      if (isNaN(currentArrival.getTime()) || isNaN(nextDeparture.getTime())) {
+        return "N/A";
+      }
+
+      const layoverMs = nextDeparture.getTime() - currentArrival.getTime();
+      const hours = Math.floor(layoverMs / (1000 * 60 * 60));
+      const minutes = Math.floor((layoverMs % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (hours === 0 && minutes === 0) return "Sem escala";
+
+      return `${hours}h ${minutes}m`;
+    } catch (error) {
       return "N/A";
     }
-    
-    const layoverMs = nextDeparture.getTime() - currentArrival.getTime();
-    const hours = Math.floor(layoverMs / (1000 * 60 * 60));
-    const minutes = Math.floor((layoverMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (hours === 0 && minutes === 0) return "Sem escala";
-    
-    return `${hours}h ${minutes}m`;
-  } catch (error) {
-    return "N/A";
-  }
-};
+  };
 
-// No seu componente FlightDetails, após parsear os dados:
+  // No seu componente FlightDetails, após parsear os dados:
 
-// Acessa o dicionário de localizações
-const locations = parsedFlightOffer?.dictionaries?.locations || {};
+  // Acessa o dicionário de localizações
+  const locations = parsedFlightOffer?.dictionaries?.locations || {};
 
-console.log("🏙️ Dicionário de localizações:", locations);
+  console.log("🏙️ Dicionário de localizações:", locations);
 
-// Função para obter o nome da cidade a partir do código do aeroporto
-const getCityName = (iataCode: string): string => {
-  if (!iataCode) return "N/A";
-  
-  const location = locations[iataCode];
-  console.log(`🔍 Buscando cidade para ${iataCode}:`, location);
-  
-  if (location) {
-    // A estrutura pode variar, tente diferentes propriedades
-    return location.cityName || location.cityCode || location.name || iataCode;
-  }
-  
-  return iataCode; // Fallback para o código se não encontrar
-};
+  // Função para obter o nome da cidade a partir do código do aeroporto
+  const getCityName = (iataCode: string): string => {
+    if (!iataCode) return "N/A";
 
-// Função para obter o nome completo do aeroporto
-const getAirportName = (iataCode: string): string => {
-  if (!iataCode) return "N/A";
-  
-  const location = locations[iataCode];
-  if (location) {
-    return location.name || iataCode;
-  }
-  
-  return iataCode;
-};
+    const location = locations[iataCode];
+    console.log(`🔍 Buscando cidade para ${iataCode}:`, location);
+
+    if (location) {
+      // A estrutura pode variar, tente diferentes propriedades
+      return (
+        location.cityName || location.cityCode || location.name || iataCode
+      );
+    }
+
+    return iataCode; // Fallback para o código se não encontrar
+  };
+
+  // Função para obter o nome completo do aeroporto
+  const getAirportName = (iataCode: string): string => {
+    if (!iataCode) return "N/A";
+
+    const location = locations[iataCode];
+    if (location) {
+      return location.name || iataCode;
+    }
+
+    return iataCode;
+  };
 
   // 🔹 Função para renderizar cada segmento
   const renderSegment = (segment: any, index: number) => {
@@ -302,7 +307,10 @@ const getAirportName = (iataCode: string): string => {
 
             <View className="flex-col justify-center items-center mx-1">
               <Octicons name="dot-fill" size={20} color="#ff8859" />
-              <View className="border-l-2 border-[#ff8859] flex-1" style={{ minHeight: 40 }} />
+              <View
+                className="border-l-2 border-[#ff8859] flex-1"
+                style={{ minHeight: 40 }}
+              />
               <Octicons name="dot" size={20} color="#ff8859" />
             </View>
 
@@ -315,7 +323,8 @@ const getAirportName = (iataCode: string): string => {
                   {formatTime(segment.departure?.at)}
                 </Text>
                 <Text className="font-medium text-sm text-slate-500">
-                  {segment.departure?.iataCode} Airport {segment.departure?.city}
+                  {segment.departure?.iataCode} Airport{" "}
+                  {segment.departure?.city}
                 </Text>
               </View>
 
@@ -361,21 +370,22 @@ const getAirportName = (iataCode: string): string => {
             style={{
               marginTop: 8,
               padding: 6,
-              backgroundColor: "#fff7ed", // orange-50
+              backgroundColor: "#fff7ed",
               borderRadius: 6,
               borderWidth: 1,
-              borderColor: "#fed7aa", // orange-200
+              borderColor: "#fed7aa",
             }}
           >
             <Text
               style={{
-                color: "#ea580c", // orange-600
+                color: "#ea580c",
                 fontSize: 14,
                 fontWeight: "600",
                 textAlign: "center",
               }}
             >
-              ⏰ Connection time: {calculateLayoverTime(segment, segments[index + 1])}
+              ⏰ Connection time:{" "}
+              {calculateLayoverTime(segment, segments[index + 1])}
             </Text>
           </View>
         )}
@@ -425,16 +435,23 @@ const getAirportName = (iataCode: string): string => {
             paddingBottom: 100,
           }}
         >
-          <View className="px-4 pt-8 w-full">
+          <View className="px-4 pt-4 w-full">
             <View className="flex-row justify-between items-center mb-4">
               {firstSegment.departure && lastSegment.arrival ? (
-                <View className="flex-row">
-                  <Text className="text-lg font-semibold">
-                    {firstSegment.departure?.iataCode} {"- "}
-                  </Text>
-                  <Text className="text-lg font-semibold">
-                    {lastSegment.arrival?.iataCode}
-                  </Text>
+                <View className="flex">
+                  <View className="flex-row">
+                    <Text className="text-lg font-semibold">
+                      {firstSegment.departure?.iataCode} {"- "}
+                    </Text>
+                    <Text className="text-lg font-semibold">
+                      {lastSegment.arrival?.iataCode}
+                    </Text>
+                  </View>
+                  <View>
+                    <Text className="text-slate-500 text-sm">
+                      {segments.length} segment(s)
+                    </Text>
+                  </View>
                 </View>
               ) : (
                 <Text className="text-gray-500 text-center">
@@ -444,6 +461,13 @@ const getAirportName = (iataCode: string): string => {
               <View>
                 <Text className="text-blue-600">Fare Rules</Text>
               </View>
+            </View>
+
+            {/* Lista de segmentos */}
+            <View className="mt-4">
+              {segments.map((segment: any, index: number) =>
+                renderSegment(segment, index)
+              )}
             </View>
 
             {/* Resumo do voo */}
@@ -457,12 +481,9 @@ const getAirportName = (iataCode: string): string => {
                     <Text className="text-slate-700 font-semibold">
                       Journey duration: {flightDuration}
                     </Text>
-                    <Text className="text-slate-500 text-sm">
-                      {segments.length} segment(s)
-                    </Text>
                   </View>
                   <View>
-                    <Text className="text-lg text-slate-700 font-semibold">
+                    <Text className="text-xl text-slate-800 font-bold">
                       {price.total} {price.currency || ""}
                     </Text>
                   </View>
@@ -470,11 +491,25 @@ const getAirportName = (iataCode: string): string => {
               </View>
             )}
 
-            {/* Lista de segmentos */}
-            <View className="mt-4">
-              {segments.map((segment: any, index: number) =>
-                renderSegment(segment, index)
-              )}
+            <View className="flex-row w-full justify-end">
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/travelerDetails",
+                    params: {
+                      flightOfferData: JSON.stringify(parsedFlightOffer),
+                    },
+                  })
+                }
+                className="bg-[#495990] rounded-lg px-8 py-4 items-center justify-center gap-1"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-base font-bold text-white">
+                    Continue Booking
+                  </Text>
+                  <FontAwesome5 name="arrow-right" size={16} color="white" />
+                </View>
+              </Pressable>
             </View>
           </View>
         </ScrollView>
